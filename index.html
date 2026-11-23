@@ -13,6 +13,9 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Supabase JS Client v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -199,28 +202,6 @@
             border-radius: 4px;
             font-weight: 600;
         }
-
-        /* Tarjetas de trivia que giran en 3D */
-        .flip-container {
-            perspective: 1000px;
-        }
-        .flip-inner {
-            position: relative;
-            width: 100%;
-            min-height: 290px;
-            transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
-            transform-style: preserve-3d;
-        }
-        .flip-container.is-flipped .flip-inner {
-            transform: rotateY(180deg);
-        }
-        .flip-front, .flip-back {
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-        }
-        .flip-back {
-            transform: rotateY(180deg);
-        }
     </style>
 </head>
 <body class="antialiased selection:bg-kraft selection:text-ink">
@@ -232,28 +213,23 @@
          style="background-color: #E7DEC8; background-image: radial-gradient(circle at center, #F3EDE0 0%, #DFD3BC 100%);">
         
         <div class="envelope-stage w-full max-w-xl">
-            <!-- Cuerpo del sobre de papel kraft -->
             <div id="kraftEnvelope" class="relative kraft-texture rounded-md shadow-floating border border-ink/15 overflow-hidden aspect-[4/3] sm:aspect-[16/11] flex flex-col justify-between p-4 sm:p-10">
                 
-                <!-- Solapa triangular superior -->
                 <div class="envelope-flap absolute top-0 left-0 right-0 h-[56%] z-20 pointer-events-none"
                      style="background: linear-gradient(180deg, #C9B08C 0%, #D8C3A5 100%); clip-path: polygon(0 0, 100% 0, 50% 100%); filter: drop-shadow(0 6px 8px rgba(29,28,26,0.16));">
                 </div>
 
-                <!-- Estampilla postal y matasellos superior derecho -->
                 <div class="relative z-10 flex justify-between items-start">
                     <div class="text-xs text-inkSoft/80 italic font-body">
                         Edición privada &bull; Hecho a mano
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <!-- Matasellos circular de tinta -->
                         <div class="hidden sm:flex flex-col items-center justify-center w-16 h-16 rounded-full border border-ink/35 text-ink/70 -rotate-12 text-center leading-tight p-1">
                             <span class="text-[9px] uppercase tracking-widest">Para ti</span>
                             <span class="text-[8px] border-y border-ink/30 my-0.5 px-1">NOV 2025</span>
                             <span class="text-[8px]">COLOMBIA</span>
                         </div>
-                        <!-- Estampilla dentada -->
                         <div class="postage-stamp rotate-2">
                             <div class="border border-wax/50 px-2.5 py-2 text-center bg-paper">
                                 <span class="block font-display italic text-xs text-wax font-semibold">365 Días</span>
@@ -263,11 +239,9 @@
                     </div>
                 </div>
 
-                <!-- Sello de Lacre Rojo Terracota Central -->
                 <div class="relative z-30 my-auto flex flex-col items-center justify-center">
                     <button id="breakSealBtn" aria-label="Abrir sobre de aniversario"
                             class="wax-seal w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-wax text-paper flex flex-col items-center justify-center cursor-pointer border-2 border-waxDark/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-wax">
-                       
                         <span class="text-[9px] uppercase tracking-widest opacity-85 mt-0.5">Abrir</span>
                     </button>
                     <p id="sealHintText" class="font-hand text-lg sm:text-2xl text-ink/85 mt-2 sm:mt-3 animate-pulse">
@@ -275,7 +249,6 @@
                     </p>
                 </div>
 
-                <!-- Destinatario manuscrito en el frente del sobre -->
                 <div class="relative z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-2 pt-4 border-t border-ink/10">
                     <div>
                         <span class="text-[11px] uppercase tracking-widest text-inkSoft block">Para:</span>
@@ -319,11 +292,9 @@
              2. LA CARTA CENTRAL Y EL SELLO FECHADO DE IMPRENTA
         ==================================================================== -->
         <section id="la-carta" class="relative max-w-3xl mx-auto">
-            <!-- Cinta adhesiva sujetando la carta arriba -->
             <div class="washi-tape w-32 h-7 mx-auto -mb-3.5 z-20 -rotate-1"></div>
 
             <article class="ruled-letter rounded-sm shadow-paper border border-ink/10 px-4 py-8 sm:px-14 sm:py-14 relative">
-                <!-- Membrete superior y sello de imprenta con el tiempo exacto -->
                 <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-6 border-b border-ink/15 pb-7 mb-8">
                     <div>
                         <p class="font-hand text-2xl text-wax">Noviembre de 2026</p>
@@ -332,7 +303,6 @@
                         </h1>
                     </div>
 
-                    <!-- Sello fechado de imprenta antigua (Contador orgánico) -->
                     <div class="self-start sm:text-right bg-paperDark/70 border border-ink/20 rounded-sm px-4 py-3 -rotate-1 shadow-xs">
                         <span class="block text-[10px] uppercase tracking-widest text-inkSoft">Tiempo caminando juntos</span>
                         <p id="stampTimeDisplay" class="font-display italic text-base sm:text-xl text-wax font-semibold mt-0.5">
@@ -342,7 +312,6 @@
                             <span id="stampOriginDate" class="text-[11px] text-inkSoft">22 Noviembre 2025</span>
                             <button id="editStartDateBtn" title="Ajustar día exacto de noviembre 2025"
                                     class="inline-flex min-h-11 items-center gap-1 px-2 text-[11px] text-ink/70 hover:text-wax underline decoration-dotted cursor-pointer">
-                                <!-- Icono lápiz minimalista inline -->
                                 <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
                                 </svg>
@@ -350,7 +319,6 @@
                             </button>
                         </div>
 
-                        <!-- Cajón desplegable discreto para cambiar el día sin modales fríos -->
                         <div id="inlineDatePicker" class="hidden mt-3 pt-2.5 border-t border-ink/15 text-left">
                             <label for="dateInputField" class="block text-[11px] text-inkSoft mb-1">Día exacto en que empezamos:</label>
                             <div class="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -364,9 +332,8 @@
                     </div>
                 </div>
 
-                <!-- Cuerpo de la carta íntima y cotidiana -->
                 <div class="space-y-5 sm:space-y-6 text-ink/90 text-base sm:text-[17px] leading-[1.8rem] sm:leading-[2rem]">
-                    
+                    <p>
                         Mi amor,
                     </p>
                     <p>
@@ -383,7 +350,6 @@
                     </p>
                 </div>
 
-                <!-- Firma manuscrita al pie -->
                 <div class="mt-10 pt-6 border-t border-ink/10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                     <div>
                         <p class="font-hand text-3xl sm:text-4xl text-ink">Con todo mi amor, Sebastián.</p>
@@ -397,7 +363,7 @@
         </section>
 
         <!-- ===================================================================
-             3. EL TENDEDERO / MESA DE POLAROIDS (LOS 12 MESES)
+             3. EL TENDEDERO / MESA DE POLAROIDS (LOS 12 MESES - SUPABASE)
         ==================================================================== -->
         <section id="polaroids" class="space-y-10">
             <div class="max-w-2xl mx-auto text-center space-y-3">
@@ -408,35 +374,31 @@
                 <p class="text-sm sm:text-base text-inkSoft leading-relaxed">
                     Cada fotografía guarda un pedacito de lo que vivimos desde noviembre de 2025. Toca cualquier Polaroid para leer la nota completa al reverso o pegar tu foto favorita de ese mes.
                 </p>
+                <p id="polaroidSyncStatus" class="font-hand text-lg text-wax/85 h-6"></p>
             </div>
 
-            <!-- Disposición orgánica de Polaroids sobre la mesa -->
             <div id="polaroidBoard" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 pt-4">
-                <!-- Generado dinámicamente por JS -->
+                <!-- Generado dinámicamente por JS desde Supabase -->
             </div>
         </section>
 
         <!-- ===================================================================
-             4. LA LIBRETA DE PASATIEMPOS DE granizado (3 JUEGOS EN PAPEL PERIÓDICO)
+             4. LA LIBRETA DE PASATIEMPOS
         ==================================================================== -->
         <section id="pasatiempos" class="max-w-4xl mx-auto">
             <div class="bg-[#F6F1E7] rounded-sm shadow-paper border border-ink/15 p-4 sm:p-10 relative">
-                <!-- Pestañas de papel recortado en la parte superior -->
                 <div class="flex flex-wrap items-center justify-between gap-4 border-b-2 border-ink/80 pb-5 mb-8">
                     <div>
-                    
                         <h2 class="font-display text-2xl sm:text-4xl text-ink mt-0.5">
                             Libreta de Pasatiempos mientras comemos
                         </h2>
                     </div>
 
-                    <!-- Estado de la nota doblada desbloqueable -->
                     <div id="secretNoteBadge" class="bg-paperDark border border-ink/20 px-4 py-2 rounded-sm text-xs text-inkSoft flex items-center gap-2">
                         <span id="puzzleProgressLabel">0 de 2 pasatiempos resueltos</span>
                     </div>
                 </div>
 
-                <!-- Navegación entre los 2 pasatiempos -->
                 <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-6 sm:mb-8 border-b border-ink/15 pb-4" role="tablist">
                     <button class="hobby-tab w-full sm:w-auto min-h-11 px-3 sm:px-4 py-2 text-xs sm:text-sm font-display italic bg-ink text-paper rounded-sm sm:rounded-t-sm transition-colors" data-tab="tab-sopa">
                         I. Sopa de Letras
@@ -446,7 +408,7 @@
                     </button>
                 </div>
 
-                <!-- CONTENIDO 1: SOPA DE LETRAS CON RESALTADOR AMARILLO -->
+                <!-- CONTENIDO 1: SOPA DE LETRAS -->
                 <div id="tab-sopa" class="hobby-panel">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                         <div class="lg:col-span-5 space-y-5">
@@ -460,7 +422,6 @@
                                     Lista para tachar (<span id="wsCounter">0</span>/24):
                                 </p>
                                 <ul id="wsWordsContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-x-3 gap-y-1 font-hand text-xl text-ink">
-                                    <!-- Palabras renderizadas vía JS -->
                                 </ul>
                             </div>
 
@@ -474,7 +435,6 @@
 
                         <div class="lg:col-span-7 flex justify-center">
                             <div id="wsBoard" class="grid gap-0.5 bg-paper p-2 sm:p-3 border border-ink/25 shadow-inner w-full max-w-[490px] aspect-square">
-                                <!-- Cuadrícula 16x16 -->
                             </div>
                         </div>
                     </div>
@@ -520,13 +480,12 @@
 
                         <div class="lg:col-span-7 flex justify-center overflow-x-auto py-2">
                             <div id="cwBoard" class="inline-grid max-w-full gap-0.5 bg-ink p-1 sm:p-1.5 border border-ink shadow-xs">
-                                <!-- Casillas del crucigrama -->
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- NOTA SECRETA DOBLADA EN EL RINCÓN (APARECE AL RESOLVER LOS PASATIEMPOS) -->
+                <!-- NOTA SECRETA DOBLADA -->
                 <div id="foldedSecretCorner" class="hidden mt-10 pt-6 border-t border-dashed border-ink/25">
                     <div class="bg-[#FBF7EE] border border-kraftDeep p-6 sm:p-8 rounded-sm shadow-paper relative max-w-2xl mx-auto -rotate-1">
                         <div class="washi-tape w-24 h-6 absolute -top-3 right-8 rotate-3"></div>
@@ -542,7 +501,7 @@
         </section>
 
         <!-- ===================================================================
-             5. BUZÓN DE PROMESAS (TABLERO DE NOTAS ADHESIVAS / POST-ITS)
+             5. BUZÓN DE PROMESAS (TABLERO DE NOTAS ADHESIVAS - SUPABASE)
         ==================================================================== -->
         <section id="buzon-notas" class="space-y-10">
             <div class="max-w-2xl mx-auto text-center space-y-3">
@@ -551,11 +510,10 @@
                     Tablero de Notas y Planes
                 </h2>
                 <p class="text-sm sm:text-base text-inkSoft leading-relaxed">
-                    Escribe un plan, un recuerdo o un deseo para nuestro segundo año y pégalo en el tablero. Las notas se quedan guardadas aquí para cuando volvamos a abrir nuestro cuaderno.
+                    Escribe un plan, un recuerdo o un deseo para nuestro segundo año y pégalo en el tablero. Las notas se quedan guardadas en la nube para que ambos las veamos al abrir nuestro cuaderno.
                 </p>
             </div>
 
-            <!-- Bloque para escribir una nueva nota adhesiva -->
             <div class="max-w-lg mx-auto bg-postitYellow p-4 sm:p-7 rounded-xs shadow-polaroid -rotate-1 border border-ink/10 relative">
                 <div class="washi-tape w-24 h-6 mx-auto -mt-9 mb-3 rotate-1"></div>
                 <form id="postitForm" class="space-y-4">
@@ -564,7 +522,6 @@
                         <div class="flex items-center gap-2">
                             <input type="text" id="postitAuthor" value="Valerie" required
                                class="bg-transparent border-b border-ink/35 font-hand text-2xl text-ink px-1 focus:outline-none focus:border-wax w-28 sm:w-36">
-                            <!-- Selector de color de papel -->
                             <div class="flex items-center gap-1 ml-1 sm:ml-2" aria-label="Color de nota">
                                 <button type="button" data-color="bg-postitYellow" class="color-swatch w-10 h-10 sm:w-5 sm:h-5 rounded-full bg-postitYellow border-2 border-ink cursor-pointer" title="Amarillo crema"></button>
                                 <button type="button" data-color="bg-postitPink" class="color-swatch w-10 h-10 sm:w-5 sm:h-5 rounded-full bg-postitPink border border-ink/30 cursor-pointer" title="Rosa antiguo"></button>
@@ -578,20 +535,18 @@
 
                     <div class="flex items-center justify-between">
                         <span id="postitFeedback" class="font-hand text-xl text-wax"></span>
-                        <button type="submit" class="min-h-11 bg-ink text-paper font-display italic text-sm px-4 sm:px-5 py-2 rounded-xs hover:bg-wax transition-colors cursor-pointer">
+                        <button type="submit" id="postitSubmitBtn" class="min-h-11 bg-ink text-paper font-display italic text-sm px-4 sm:px-5 py-2 rounded-xs hover:bg-wax transition-colors cursor-pointer">
                             Pegar en el tablero
                         </button>
                     </div>
                 </form>
             </div>
 
-            <!-- Tablero donde se pegan las notas adhesivas -->
             <div id="postitBoard" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 pt-4">
-                <!-- Notas renderizadas desde localStorage -->
+                <!-- Notas renderizadas desde Supabase -->
             </div>
         </section>
 
-        <!-- Pie de página íntimo -->
         <footer class="pt-12 border-t border-ink/15 text-center space-y-2 text-inkSoft">
             <p class="font-display italic text-xl text-ink">Sebastián &amp; Valerie &mdash; Primer Aniversario</p>
             <p class="text-xs">Noviembre 2025 – Noviembre 2026</p>
@@ -608,7 +563,6 @@
             </button>
 
             <div class="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-7 items-center pt-10 md:pt-2">
-                <!-- Marco Polaroid grande -->
                 <div class="md:col-span-6 bg-[#FCFBF9] p-3.5 pb-10 shadow-polaroid border border-ink/10 -rotate-1">
                     <div id="detailPhotoFrame" class="aspect-square w-full overflow-hidden relative flex items-center justify-center bg-paperDark">
                         <img id="detailPhotoImg" src="" alt="Recuerdo" class="hidden w-full h-full object-cover">
@@ -626,7 +580,6 @@
                     </div>
                 </div>
 
-                <!-- Reverso manuscrito de la fotografía -->
                 <div class="md:col-span-6 space-y-4">
                     <div>
                         <div class="flex items-center justify-between gap-2">
@@ -645,7 +598,6 @@
                                   class="w-full text-sm sm:text-base text-ink/90 leading-relaxed bg-paperDark/45 border border-ink/15 hover:border-ink/30 focus:border-wax focus:bg-paper focus:outline-none rounded-xs p-3 transition-colors resize-y"></textarea>
                     </div>
 
-                    <!-- Botón para cargar foto real desde el dispositivo -->
                     <div class="pt-2 border-t border-ink/15 flex flex-wrap items-center justify-between gap-3">
                         <label for="polaroidFileInput"
                                class="inline-flex items-center gap-2 bg-kraft/60 hover:bg-kraft text-ink text-xs uppercase tracking-wider px-4 py-2 rounded-xs border border-ink/20 cursor-pointer transition-colors">
@@ -654,7 +606,7 @@
                                 <circle cx="8.5" cy="8.5" r="1.5"/>
                                 <polyline points="21 15 16 10 5 21"/>
                             </svg>
-                            <span>Pegar foto</span>
+                            <span id="uploadPhotoBtnLabel">Pegar foto</span>
                         </label>
                         <input type="file" id="polaroidFileInput" accept="image/*" class="hidden">
 
@@ -673,9 +625,18 @@
     </div>
 
     <!-- =====================================================================
-         JAVASCRIPT VANILLA LIMPIO Y AUTOCONTENIDO
+         JAVASCRIPT CON PERSISTENCIA SUPABASE EN POLAROIDS Y TABLERO DE NOTAS
     ====================================================================== -->
     <script>
+        // =====================================================================
+        // CONFIGURACIÓN DE SUPABASE (REEMPLAZA CON TUS CREDENCIALES DE PROYECTO)
+        // =====================================================================
+        const SUPABASE_URL = 'https://stqisbqsnjncyurrkbka.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0cWlzYnFzbmpuY3l1cnJrYmthIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU0MDI0MjEsImV4cCI6MjExMDk3ODQyMX0.HErnSennw4FIpplQjLC7xKQcqVUENJDd4ryTlb_ZLJU';
+        const STORAGE_BUCKET = 'anniversary-photos';
+
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         const DEFAULT_START_ISO = '2025-11-22T00:00:00';
         let START_DATE_STR = localStorage.getItem('sv_anniversary_start_v2') || DEFAULT_START_ISO;
 
@@ -709,7 +670,7 @@
         }
 
         /* =====================================================================
-           2. SELLO FECHADO DE IMPRENTA (CONTADOR ORGÁNICO EN TIEMPO REAL)
+           2. SELLO FECHADO DE IMPRENTA
         ===================================================================== */
         function initStampClock() {
             const displayEl = document.getElementById('stampTimeDisplay');
@@ -757,7 +718,7 @@
         }
 
         /* =====================================================================
-           3. TENDEDERO DE POLAROIDS (LOS 12 MESES: NOV 2025 – OCT 2026)
+           3. TENDEDERO DE POLAROIDS CON SUPABASE (DB + STORAGE)
         ===================================================================== */
         const MONTHS_MEMORIES = [
             {
@@ -879,13 +840,15 @@
             }
         ];
 
-        function initPolaroidsBoard() {
+        async function initPolaroidsBoard() {
             const board = document.getElementById('polaroidBoard');
+            const syncStatus = document.getElementById('polaroidSyncStatus');
             const backdrop = document.getElementById('polaroidDetailBackdrop');
             const closeBtn = document.getElementById('closePolaroidDetailBtn');
             const prevBtn = document.getElementById('prevPolaroidBtn');
             const nextBtn = document.getElementById('nextPolaroidBtn');
             const fileInput = document.getElementById('polaroidFileInput');
+            const uploadPhotoBtnLabel = document.getElementById('uploadPhotoBtnLabel');
 
             const detailCaptionHand = document.getElementById('detailCaptionHand');
             const detailTitleInput = document.getElementById('detailTitleInput');
@@ -893,34 +856,90 @@
             const detailSaveIndicator = document.getElementById('detailSaveIndicator');
             const resetPolaroidTextBtn = document.getElementById('resetPolaroidTextBtn');
 
-            const UNIFIED_STORAGE_KEY = 'sv_polaroid_memories_v2';
-            const legacyPhotos = JSON.parse(localStorage.getItem('sv_polaroid_photos') || '{}');
-            let savedMemories = JSON.parse(localStorage.getItem(UNIFIED_STORAGE_KEY) || '{}');
+            let savedMemories = {};
             let activeIndex = 0;
             let saveIndicatorTimer = null;
+            let debounceSaveTimer = null;
 
-            function persistMemories() {
-                try {
-                    localStorage.setItem(UNIFIED_STORAGE_KEY, JSON.stringify(savedMemories));
-                    clearTimeout(saveIndicatorTimer);
-                    detailSaveIndicator.classList.remove('opacity-0');
-                    saveIndicatorTimer = setTimeout(() => {
-                        detailSaveIndicator.classList.add('opacity-0');
-                    }, 1600);
-                } catch (err) {
-                    // Respaldo en memoria si excede cuota de almacenamiento
+            function showDetailSaveFeedback(msg = 'Guardado en la nube') {
+                detailSaveIndicator.textContent = msg;
+                clearTimeout(saveIndicatorTimer);
+                detailSaveIndicator.classList.remove('opacity-0');
+                saveIndicatorTimer = setTimeout(() => {
+                    detailSaveIndicator.classList.add('opacity-0');
+                }, 1800);
+            }
+
+            async function loadMemoriesFromSupabase() {
+                syncStatus.textContent = 'Cargando recuerdos compartidos...';
+                const { data, error } = await supabaseClient
+                    .from('polaroid_memories')
+                    .select('*');
+
+                if (error) {
+                    console.error('Error cargando polaroids:', error);
+                    syncStatus.textContent = 'No se pudo sincronizar con Supabase (verifica credenciales)';
+                    return;
                 }
+
+                savedMemories = {};
+                (data || []).forEach(row => {
+                    savedMemories[row.id] = {
+                        photo: row.photo_url,
+                        caption: row.caption,
+                        title: row.title,
+                        story: row.story
+                    };
+                });
+                syncStatus.textContent = '';
+            }
+
+            async function upsertMemoryToSupabase(monthId) {
+                const baseItem = MONTHS_MEMORIES.find(m => m.id === monthId);
+                const current = getMonthData(baseItem);
+
+                showDetailSaveFeedback('Guardando...');
+                const { error } = await supabaseClient
+                    .from('polaroid_memories')
+                    .upsert({
+                        id: monthId,
+                        photo_url: current.photo || null,
+                        caption: current.caption,
+                        title: current.title,
+                        story: current.story,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'id' });
+
+                if (error) {
+                    console.error('Error guardando polaroid:', error);
+                    showDetailSaveFeedback('Error al guardar');
+                } else {
+                    showDetailSaveFeedback('Guardado en el cuaderno');
+                }
+            }
+
+            function scheduleDebouncedSave(monthId) {
+                clearTimeout(debounceSaveTimer);
+                debounceSaveTimer = setTimeout(() => {
+                    upsertMemoryToSupabase(monthId);
+                }, 600);
             }
 
             function getMonthData(item) {
                 const custom = savedMemories[item.id] || {};
                 return {
                     ...item,
-                    photo: custom.photo !== undefined ? custom.photo : (legacyPhotos[item.id] || null),
-                    caption: custom.caption !== undefined ? custom.caption : item.caption,
-                    title: custom.title !== undefined ? custom.title : item.title,
-                    story: custom.story !== undefined ? custom.story : item.story
+                    photo: custom.photo !== undefined && custom.photo !== null ? custom.photo : null,
+                    caption: custom.caption !== undefined && custom.caption !== null ? custom.caption : item.caption,
+                    title: custom.title !== undefined && custom.title !== null ? custom.title : item.title,
+                    story: custom.story !== undefined && custom.story !== null ? custom.story : item.story
                 };
+            }
+
+            function escapeHtmlText(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
             }
 
             function renderPolaroids() {
@@ -931,7 +950,6 @@
                     card.className = `polaroid-card ${item.tilt} bg-[#FCFBF9] p-3.5 pb-6 shadow-polaroid border border-ink/10 cursor-pointer relative group`;
 
                     card.innerHTML = `
-                        <!-- Trozo de cinta adhesiva arriba -->
                         <div class="washi-tape w-20 h-6 mx-auto -mt-6 mb-2 ${idx % 2 === 0 ? '-rotate-2' : 'rotate-2'}"></div>
                         
                         <div class="aspect-square w-full overflow-hidden relative flex items-center justify-center" style="background-color: ${item.tint}">
@@ -961,11 +979,11 @@
                             inlineCaptionEl.blur();
                         }
                     });
-                    inlineCaptionEl.addEventListener('blur', () => {
+                    inlineCaptionEl.addEventListener('blur', async () => {
                         const newVal = inlineCaptionEl.textContent.trim() || baseItem.caption;
                         inlineCaptionEl.textContent = newVal;
                         savedMemories[item.id] = { ...(savedMemories[item.id] || {}), caption: newVal };
-                        persistMemories();
+                        await upsertMemoryToSupabase(item.id);
                     });
 
                     card.addEventListener('click', () => openPolaroidDetail(idx));
@@ -973,18 +991,12 @@
                 });
             }
 
-            function escapeHtmlText(str) {
-                const div = document.createElement('div');
-                div.textContent = str;
-                return div.innerHTML;
-            }
-
             function openPolaroidDetail(index) {
                 activeIndex = index;
                 const baseItem = MONTHS_MEMORIES[index];
                 const item = getMonthData(baseItem);
 
-                document.getElementById('detailDateTag').textContent = `${item.month} (Mes ${index + 1} de 12)`;
+                document.getElementById('detailDateTag').textContent = `${item.month} (Mes ${index + 1} de ${MONTHS_MEMORIES.length})`;
                 detailTitleInput.value = item.title;
                 detailStoryInput.value = item.story;
                 detailCaptionHand.textContent = item.caption;
@@ -1020,7 +1032,7 @@
                     ...(savedMemories[baseItem.id] || {}),
                     title: detailTitleInput.value
                 };
-                persistMemories();
+                scheduleDebouncedSave(baseItem.id);
             });
 
             detailStoryInput.addEventListener('input', () => {
@@ -1029,7 +1041,7 @@
                     ...(savedMemories[baseItem.id] || {}),
                     story: detailStoryInput.value
                 };
-                persistMemories();
+                scheduleDebouncedSave(baseItem.id);
             });
 
             detailCaptionHand.addEventListener('keydown', (e) => {
@@ -1039,7 +1051,7 @@
                 }
             });
 
-            detailCaptionHand.addEventListener('blur', () => {
+            detailCaptionHand.addEventListener('blur', async () => {
                 const baseItem = MONTHS_MEMORIES[activeIndex];
                 const cleanCaption = detailCaptionHand.textContent.trim() || baseItem.caption;
                 detailCaptionHand.textContent = cleanCaption;
@@ -1047,37 +1059,61 @@
                     ...(savedMemories[baseItem.id] || {}),
                     caption: cleanCaption
                 };
-                persistMemories();
+                await upsertMemoryToSupabase(baseItem.id);
                 renderPolaroids();
             });
 
-            resetPolaroidTextBtn.addEventListener('click', () => {
+            resetPolaroidTextBtn.addEventListener('click', async () => {
                 const baseItem = MONTHS_MEMORIES[activeIndex];
-                if (savedMemories[baseItem.id]) {
-                    delete savedMemories[baseItem.id].caption;
-                    delete savedMemories[baseItem.id].title;
-                    delete savedMemories[baseItem.id].story;
-                    persistMemories();
-                }
+                savedMemories[baseItem.id] = {
+                    ...(savedMemories[baseItem.id] || {}),
+                    caption: baseItem.caption,
+                    title: baseItem.title,
+                    story: baseItem.story
+                };
                 openPolaroidDetail(activeIndex);
                 renderPolaroids();
+                await upsertMemoryToSupabase(baseItem.id);
             });
 
-            fileInput.addEventListener('change', (e) => {
+            fileInput.addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const baseItem = MONTHS_MEMORIES[activeIndex];
-                    savedMemories[baseItem.id] = {
-                        ...(savedMemories[baseItem.id] || {}),
-                        photo: ev.target.result
-                    };
-                    persistMemories();
-                    openPolaroidDetail(activeIndex);
-                    renderPolaroids();
+
+                const baseItem = MONTHS_MEMORIES[activeIndex];
+                const fileExt = file.name.split('.').pop() || 'jpg';
+                const filePath = `${baseItem.id}_${Date.now()}.${fileExt}`;
+
+                uploadPhotoBtnLabel.textContent = 'Subiendo foto...';
+                showDetailSaveFeedback('Subiendo imagen...');
+
+                const { error: uploadError } = await supabaseClient.storage
+                    .from(STORAGE_BUCKET)
+                    .upload(filePath, file, { upsert: true });
+
+                if (uploadError) {
+                    console.error('Error subiendo foto a Supabase Storage:', uploadError);
+                    uploadPhotoBtnLabel.textContent = 'Pegar foto';
+                    showDetailSaveFeedback('Error al subir foto');
+                    e.target.value = '';
+                    return;
+                }
+
+                const { data: publicUrlData } = supabaseClient.storage
+                    .from(STORAGE_BUCKET)
+                    .getPublicUrl(filePath);
+
+                const publicUrl = publicUrlData.publicUrl;
+
+                savedMemories[baseItem.id] = {
+                    ...(savedMemories[baseItem.id] || {}),
+                    photo: publicUrl
                 };
-                reader.readAsDataURL(file);
+
+                await upsertMemoryToSupabase(baseItem.id);
+                uploadPhotoBtnLabel.textContent = 'Pegar foto';
+                openPolaroidDetail(activeIndex);
+                renderPolaroids();
                 e.target.value = '';
             });
 
@@ -1092,11 +1128,12 @@
                 openPolaroidDetail((activeIndex + 1) % MONTHS_MEMORIES.length);
             });
 
+            await loadMemoriesFromSupabase();
             renderPolaroids();
         }
 
         /* =====================================================================
-           4. LIBRETA DE PASATIEMPOS mientras comemos (2 JUEGOS + NOTA DOBLADA)
+           4. LIBRETA DE PASATIEMPOS (2 JUEGOS + NOTA DOBLADA)
         ===================================================================== */
         function initHobbyNotebook() {
             const solvedSet = new Set();
@@ -1111,7 +1148,6 @@
                 }
             }
 
-            // Pestañas de la libreta
             const tabs = document.querySelectorAll('.hobby-tab');
             const panels = document.querySelectorAll('.hobby-panel');
             tabs.forEach(tab => {
@@ -1130,9 +1166,6 @@
                 });
             });
 
-            /* -----------------------------------------------------------------
-               PASATIEMPO I: SOPA DE LETRAS CON RESALTADOR AMARILLO (24 PALABRAS)
-            ----------------------------------------------------------------- */
             const TARGET_WORDS_DATA = [
                 { display: 'FUSA', grid: 'FUSA' },
                 { display: 'AMOR', grid: 'AMOR' },
@@ -1176,17 +1209,16 @@
             function attemptPlaceAllWords(wordsSorted) {
                 const board = Array.from({ length: SIZE }, () => Array(SIZE).fill(''));
                 const directions = [
-                    { dr: 0, dc: 1 },   // Horizontal derecha
-                    { dr: 1, dc: 0 },   // Vertical abajo
-                    { dr: 1, dc: 1 },   // Diagonal abajo-derecha
-                    { dr: -1, dc: 1 }   // Diagonal arriba-derecha
+                    { dr: 0, dc: 1 },
+                    { dr: 1, dc: 0 },
+                    { dr: 1, dc: 1 },
+                    { dr: -1, dc: 1 }
                 ];
 
                 for (const item of wordsSorted) {
                     const word = item.grid;
                     let placed = false;
 
-                    // Generar todas las posiciones y direcciones válidas y mezclarlas
                     const candidates = [];
                     for (const dir of directions) {
                         for (let r = 0; r < SIZE; r++) {
@@ -1200,13 +1232,11 @@
                         }
                     }
 
-                    // Mezcla Fisher-Yates
                     for (let i = candidates.length - 1; i > 0; i--) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
                     }
 
-                    // Priorizar intersecciones compartidas para que quepan las 24 palabras con holgura
                     candidates.sort((a, b) => {
                         let overlapA = 0;
                         let overlapB = 0;
@@ -1254,7 +1284,6 @@
                     placedBoard = attemptPlaceAllWords(sortedByLength);
                 }
 
-                // Respaldo garantizado si los intentos aleatorios no completan las 24
                 if (!placedBoard) {
                     placedBoard = Array.from({ length: SIZE }, () => Array(SIZE).fill(''));
                     sortedByLength.forEach((item, idx) => {
@@ -1358,7 +1387,6 @@
                     tapAnchorCell = null;
                     wsBoard.querySelectorAll('.is-dragging').forEach(el => el.classList.remove('is-dragging'));
                 } else if (currentPath.length === 1 && originCell) {
-                    // Soporte de toque inicio -> toque fin en móviles
                     if (!tapAnchorCell) {
                         tapAnchorCell = originCell;
                         paintDrag([tapAnchorCell]);
@@ -1405,41 +1433,6 @@
             document.getElementById('wsResetBtn').addEventListener('click', generateWordSearch);
             generateWordSearch();
 
-            /* -----------------------------------------------------------------
-               PASATIEMPO II: CRUCIGRAMA DE NOSOTROS (5 PALABRAS INTERSECADAS)
-               Coordenadas verificadas:
-               - 4 Vertical (SALCHIPAPA): c=4, r=0..9 -> S(0,4) A(1,4) L(2,4) C(3,4) H(4,4) I(5,4) P(6,4) A(7,4) P(8,4) A(9,4)
-               - 1 Horizontal (LOIGON):   r=2, c=4..9 -> L(2,4) O(2,5) I(2,6) G(2,7) O(2,8) N(2,9)  [Cruza L en (2,4)]
-               - 3 Horizontal (RECOCHA):  r=7, c=0..6 -> R(7,0) E(7,1) C(7,2) O(7,3) C(7,4) H(7,5) A(7,6)? -> En (7,4) SALCHIPAPA tiene A!
-                 Ajustemos 3 Horizontal (RECOCHA) en r=7, c=0..6 -> R(7,0) E(7,1) C(7,2) O(7,3) C(7,4)? No:
-                 Si 3 Horizontal (RECOCHA) empieza en c=0, r=7: R(7,0) E(7,1) C(7,2) O(7,3) C(7,4)? En (7,4) es A!
-                 ¡RECOCHA termina en A! Si r=7, c=0..6 -> R(7,0) E(7,1) C(7,2) O(7,3) C(7,4)? No, c=0..6 tiene 7 letras:
-                 c=0:R, c=1:E, c=2:C, c=3:O, c=4:C, c=5:H, c=6:A.
-                 Para que la A final de RECOCHA caiga en (7,4), RECOCHA va de c=-2..4 (no).
-                 Si SALCHIPAPA está en c=6, r=0..9:
-                 - 4 Vertical (SALCHIPAPA): c=6, r=0..9 -> S(0,6) A(1,6) L(2,6) C(3,6) H(4,6) I(5,6) P(6,6) A(7,6) P(8,6) A(9,6)
-                 - 1 Horizontal (LOIGON):   r=2, c=6..11 -> L(2,6) O(2,7) I(2,8) G(2,9) O(2,10) N(2,11) [Cruza L en (2,6)]
-                 - 3 Horizontal (RECOCHA):  r=7, c=0..6  -> R(7,0) E(7,1) C(7,2) O(7,3) C(7,4) H(7,5) A(7,6) [Cruza A en (7,6)]
-                 - 5 Horizontal (OCTUBRE):  r=3, c=5..11 -> O(3,5) C(3,6) T(3,7) U(3,8) B(3,9) R(3,10) E(3,11) [Cruza C en (3,6)]
-                 - 2 Vertical (AZUL):       c=8, r=0..3  -> A(0,8) Z(1,8) U(2,8)? No, (2,8) es I de LOIGON.
-                   Pongamos 2 Vertical (AZUL) cruzando la U(3,8) de OCTUBRE:
-                   c=8, r=1..4 -> A(1,8) Z(2,8)? (2,8) es I.
-                   Pongamos 2 Vertical (AZUL) en c=10, r=2..5? No, empieza en O(2,10).
-                   ¡Mira (7,6) es A de RECOCHA y SALCHIPAPA, y en c=8 r=3 es U de OCTUBRE!
-                   Si 2 Vertical (AZUL) empieza en A(3,1)? No.
-                   ¡En r=7, c=6 es A! Si 2 Vertical (AZUL) empieza en A(7,6)? No, (7,6) ya tiene vertical.
-                   ¡En r=3, c=8 es U de OCTUBRE! Si AZUL tiene U en índice 2 (A-Z-U-L), entonces:
-                   r=1, c=8: A
-                   r=2, c=8: Z -> choca con I(2,8) de LOIGON.
-                   ¿Y si 1 Horizontal (LOIGON) está en r=5, c=6..11 (cruzando I(5,6) de SALCHIPAPA)?
-                   ¡COMPROBEMOS ESA INTERSECCIÓN!
-                   - 4 Vertical (SALCHIPAPA): c=6, r=0..9 -> S(0,6) A(1,6) L(2,6) C(3,6) H(4,6) I(5,6) P(6,6) A(7,6) P(8,6) A(9,6)
-                   - 1 Horizontal (LOIGON):   r=5, c=4..9  -> L(5,4) O(5,5) I(5,6) G(5,7) O(5,8) N(5,9)  [Cruza I en (5,6)]
-                   - 3 Horizontal (RECOCHA):  r=7, c=0..6  -> R(7,0) E(7,1) C(7,2) O(7,3) C(7,4) H(7,5) A(7,6) [Cruza A en (7,6)]
-                   - 5 Horizontal (OCTUBRE):  r=3, c=5..11 -> O(3,5) C(3,6) T(3,7) U(3,8) B(3,9) R(3,10) E(3,11) [Cruza C en (3,6)]
-                   - 2 Vertical (AZUL):       c=8, r=1..4  -> A(1,8) Z(2,8) U(3,8) L(4,8) [Cruza U en (3,8) y no toca r=5!]
-                   ¡TODAS LAS COORDENADAS SON 100% COMPATIBLES Y SIN COLISIONES!
-            ----------------------------------------------------------------- */
             const CW_R = 10;
             const CW_C = 12;
             const cwGrid = Array.from({ length: CW_R }, () => Array(CW_C).fill(null));
@@ -1454,11 +1447,11 @@
                 }
             }
 
-            addWordToCW('LOIGON',     5, 4, 0, 1, 1); // 1 Horizontal
-            addWordToCW('AZUL',       1, 8, 1, 0, 2); // 2 Vertical
-            addWordToCW('RECOCHA',    7, 0, 0, 1, 3); // 3 Horizontal
-            addWordToCW('SALCHIPAPA', 0, 6, 1, 0, 4); // 4 Vertical
-            addWordToCW('OCTUBRE',    3, 5, 0, 1, 5); // 5 Horizontal
+            addWordToCW('LOIGON',     5, 4, 0, 1, 1);
+            addWordToCW('AZUL',       1, 8, 1, 0, 2);
+            addWordToCW('RECOCHA',    7, 0, 0, 1, 3);
+            addWordToCW('SALCHIPAPA', 0, 6, 1, 0, 4);
+            addWordToCW('OCTUBRE',    3, 5, 0, 1, 5);
 
             const cwBoard = document.getElementById('cwBoard');
             const cwFeedback = document.getElementById('cwFeedback');
@@ -1473,7 +1466,6 @@
                     cwCellInputs[nr][nc].focus();
                     return;
                 }
-                // Si no continúa en la dirección activa, intentar la perpendicular
                 const altDr = activeDirection === 'H' ? step : 0;
                 const altDc = activeDirection === 'V' ? step : 0;
                 const ar = r + altDr;
@@ -1599,18 +1591,19 @@
         }
 
         /* =====================================================================
-           5. BUZÓN DE PROMESAS (TABLERO DE NOTAS ADHESIVAS EN LOCALSTORAGE)
+           5. BUZÓN DE PROMESAS (TABLERO DE NOTAS ADHESIVAS EN SUPABASE)
         ===================================================================== */
-        function initPostitBoard() {
+        async function initPostitBoard() {
             const form = document.getElementById('postitForm');
             const authorInput = document.getElementById('postitAuthor');
             const msgInput = document.getElementById('postitMessage');
             const board = document.getElementById('postitBoard');
             const feedback = document.getElementById('postitFeedback');
+            const submitBtn = document.getElementById('postitSubmitBtn');
             const swatches = document.querySelectorAll('.color-swatch');
 
-            const STORAGE_KEY = 'sv_postit_notes_v1';
             let selectedColor = 'bg-postitYellow';
+            let notesCache = [];
 
             swatches.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -1624,38 +1617,41 @@
                 });
             });
 
-            function getNotes() {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) return JSON.parse(raw);
-                return [
-                    {
-                        id: 'n1',
-                        author: 'Sebastián',
-                        text: 'Seguir yendo juntos a las sinteticas y después pasar por un buen granizado juntos.',
-                        color: 'bg-postitYellow',
-                        tilt: '-rotate-1',
-                        date: 'Noviembre 2026'
-                    },
-                    {
-                        id: 'n2',
-                        author: 'Valerie',
-                        text: 'Hacer un viaje nuevo juntos este segundo año y seguir disfrutando hasta las vueltas más simples.',
-                        color: 'bg-postitPink',
-                        tilt: 'rotate-2',
-                        date: 'Noviembre 2026'
-                    }
-                ];
+            async function loadNotesFromSupabase() {
+                board.innerHTML = `<p class="col-span-full text-center font-hand text-2xl text-inkSoft">Leyendo notas del tablero...</p>`;
+                const { data, error } = await supabaseClient
+                    .from('postit_notes')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error cargando notas:', error);
+                    board.innerHTML = `<p class="col-span-full text-center font-hand text-2xl text-wax">No se pudieron cargar las notas de la nube.</p>`;
+                    return;
+                }
+
+                notesCache = (data || []).map(row => ({
+                    id: row.id,
+                    author: row.author,
+                    text: row.text,
+                    color: row.color,
+                    tilt: row.tilt,
+                    date: row.date_label
+                }));
+
+                renderNotes();
             }
 
-            function saveNotes(list) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+            function escapeText(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
             }
 
             function renderNotes() {
-                const notes = getNotes();
                 board.innerHTML = '';
 
-                notes.forEach(note => {
+                notesCache.forEach(note => {
                     const card = document.createElement('div');
                     card.className = `${note.color} ${note.tilt} p-6 rounded-xs shadow-polaroid border border-ink/10 relative flex flex-col justify-between min-h-[190px] transition-transform hover:rotate-0`;
 
@@ -1675,23 +1671,28 @@
                         </div>
                     `;
 
-                    card.querySelector('[data-del]').addEventListener('click', () => {
-                        const updated = getNotes().filter(n => n.id !== note.id);
-                        saveNotes(updated);
+                    card.querySelector('[data-del]').addEventListener('click', async () => {
+                        const prevNotes = [...notesCache];
+                        notesCache = notesCache.filter(n => n.id !== note.id);
                         renderNotes();
+
+                        const { error } = await supabaseClient
+                            .from('postit_notes')
+                            .delete()
+                            .eq('id', note.id);
+
+                        if (error) {
+                            console.error('Error eliminando nota:', error);
+                            notesCache = prevNotes;
+                            renderNotes();
+                        }
                     });
 
                     board.appendChild(card);
                 });
             }
 
-            function escapeText(str) {
-                const div = document.createElement('div');
-                div.textContent = str;
-                return div.innerHTML;
-            }
-
-            form.addEventListener('submit', (e) => {
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const author = authorInput.value.trim() || 'Valerie';
                 const text = msgInput.value.trim();
@@ -1701,25 +1702,47 @@
                 const randomTilt = tilts[Math.floor(Math.random() * tilts.length)];
                 const now = new Date();
                 const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                const dateLabel = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+                const newId = 'note_' + Date.now();
 
-                const notes = getNotes();
-                notes.unshift({
-                    id: 'note_' + Date.now(),
+                submitBtn.disabled = true;
+                feedback.textContent = 'Pegando nota...';
+
+                const { error } = await supabaseClient
+                    .from('postit_notes')
+                    .insert({
+                        id: newId,
+                        author,
+                        text,
+                        color: selectedColor,
+                        tilt: randomTilt,
+                        date_label: dateLabel
+                    });
+
+                submitBtn.disabled = false;
+
+                if (error) {
+                    console.error('Error guardando nota:', error);
+                    feedback.textContent = 'No se pudo guardar la nota';
+                    return;
+                }
+
+                notesCache.unshift({
+                    id: newId,
                     author,
                     text,
                     color: selectedColor,
                     tilt: randomTilt,
-                    date: `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`
+                    date: dateLabel
                 });
 
-                saveNotes(notes);
                 msgInput.value = '';
                 feedback.textContent = '¡Nota pegada!';
                 setTimeout(() => { feedback.textContent = ''; }, 2500);
                 renderNotes();
             });
 
-            renderNotes();
+            await loadNotesFromSupabase();
         }
     </script>
 </body>
